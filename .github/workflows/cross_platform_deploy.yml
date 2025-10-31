@@ -1,4 +1,4 @@
-name: Cross Platform Deployment
+Name: Cross Platform Deployment
 
 on:
   push:
@@ -7,9 +7,7 @@ on:
 jobs:
   cross-build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
+
     env:
       VERSION: 1.0.0
       SOURCE_DIR: ${{github.WORKSPACE}}
@@ -24,7 +22,7 @@ jobs:
         run: cmake -S ${{env.SOURCE_DIR}} -B ${{env.BUILD_DIR}}
 
       - name: Package
-        run: cmake --build ${{BUILD_DIR}} --target all package
+        run: cmake --build ${{env.BUILD_DIR}} --target all package
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -35,6 +33,9 @@ jobs:
       - name: Release Package
         uses: softprops/action-gh-release@v2
         with:
+          name: v${{env.VERSION}}
+          body_path: ${{github.WORKSPACE}}/notes/RELEASE-${{env.VERSION}}.txt
+          make_latest: true
           files: |
             ${{env.PACKAGE_DIR}}/CICD-${{env.VERSION}}.zip
             ${{env.PACKAGE_DIR}}/CICD-${{env.VERSION}}.tar.gz
