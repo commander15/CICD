@@ -1,0 +1,30 @@
+if (NOT SOFTWARE_NAME)
+    message(WARNING "You need to define the following variables \n")
+    # SOFTWARE_NAME
+    # SOFTWARE_EDITOR
+    # SOFTWARE_TARGET
+    # SOFTWARE_COMPONENT
+
+    set(SOFTWARE_NAME ${PROJECT_NAME})
+endif()
+
+if (NOT SOFTWARE_EDITOR)
+    set(SOFTWARE_EDITOR "Commander Systems")
+endif()
+
+if (NOT SOFTWARE_TARGET)
+endif()
+
+set(SOFTWARE_COMPONENT ${CPACK_DEFAULT_COMPONENT})
+
+string(REPLACE " " "-" CPACK_PACKAGE_NAME ${SOFTWARE_NAME})
+set(CPACK_PACKAGE_DESCRIPTION ${PROJECT_DESCRIPTION})
+set(CPACK_PACKAGE_VERSION     ${PROJECT_VERSION})
+set(CPACK_PACKAGE_VENDOR      ${SOFTWARE_EDITOR})
+
+set(CPACK_PACKAGE_DIRECTORY   ${CMAKE_BINARY_DIR}/releases)
+
+include(${CMAKE_CURRENT_LIST_DIR}/CPackConfigCore.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/CPackConfigArchive.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/CPackConfigIFW.cmake)
+include(CPack)

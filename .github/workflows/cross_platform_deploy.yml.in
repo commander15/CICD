@@ -1,0 +1,38 @@
+Name: Cross Platform Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  cross-build:
+    runs-on: ubuntu-latest
+
+    env:
+      VERSION: @PROJECT_VERSION@
+      SOURCE_DIR: ${{github.WORKSPACE}}
+      BUILD_DIR: ${{github.WORKSPACE}}/build
+      PACKAGE_DIR: ${{github.WORKSPACE}}/build/release
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -S ${{env.SOURCE_DIR}} -B ${{env.BUILD_DIR}}
+
+      - name: Package
+        run: cmake --build ${{BUILD_DIR}} --target all package
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CICD-@PROJECT_VERSION@
+          path: ${{env.PACKAGE_DIR}}/CICD*
+
+      - name: Release Package
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{env.PACKAGE_DIR}}/CICD-${{env.VERSION}}.zip
+            ${{env.PACKAGE_DIR}}/CICD-${{env.VERSION}}.tar.gz

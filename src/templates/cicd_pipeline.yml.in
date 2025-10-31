@@ -1,0 +1,106 @@
+Name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  # Package settings
+  PACKAGE_DISPLAY_NAME: '@DISPLAY_NAME@'
+  PACKAGE_NAME: '@PACKAGE_NAME@'
+  PACKAGE_VERSION: '@PACKAGE_VERSION@'
+  # CMake settings
+  CMAKE_GENERATOR: Ninja
+  CMAKE_BUILD_TYPE: Release
+  CMAKE_BUILD_COMMAND: cmake --build ${{github.workspace}}\build --config ${{env.CMAKE_BUILD_TYPE}}
+  # Qt Settings
+  QT_VERSION: @QT_VERSION@
+  QT_TOOLS: '@QT_TOOLS@'
+
+jobs:
+  windows-build:
+    runs-on: windows-latest
+    
+    env:
+      # Qt Settings
+      QT_HOST: windows
+      QT_TARGET: desktop
+      QT_ARCH: win64_msvc2022_64
+      # MSVC Settings
+      MSVC_ARCH: x64
+      # CMake Settings
+      CMAKE_BUILD_DIR: ${{github.workspace}}\build
+      # CPack Settings
+      CPACK_PACKAGE_DIR: ${{github.workspace}}\releases
+      
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: ${{env.QT_VERSION}}
+        tools: ${{env.QT_TOOLS}}
+        host: ${{env.QT_HOST}}
+        target: ${{env.QT_TARGET}}
+        arch: ${{env.QT_ARCH}}
+        install-deps: true
+
+    - name: Install Build Tools
+      # Install CMake and Ninja
+      run: choco install -y cmake ninja
+
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{env.MSVC_ARCH}}
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory
+      run: cmake -G ${{env.CMAKE_GENERATOR}} -B ${{github.workspace}}\build -DCMAKE_BUILD_TYPE=${{env.CMAKE_BUILD_TYPE}} -DCMALE_INSTALL_PREFIX=${{env.INSTALL_LOCATION}}
+
+    - name: Build
+      # Build your program with the given configuration
+      run: ${{env.CMAKE_BUILD_COMMAND}} --target all
+
+    - name: Test
+      # Running tests
+      run: ${{env.CMAKE_BUILD_COMMAND}} --target test
+
+    - name: Package
+      run: ${{env.CMAKE_BUILD_COMMAND}} --target package
+      
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: @CPACK_PACKAGE_NAME@-@CPACK_PACKAGE_VERSION@
+        path: ${{env.PACKAGE_LOCATION}}\@CPACK_PACKAGE_NAME@*
+        
+  linux-build:
+    runs-on: linux-latest
+    
+    env:
+      # Qt Settings
+      QT_HOST: linux
+      QT_TARGET: desktop
+      QT_ARCH: win64_msvc2022_64
+      
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+  release:
+    runs-on: linux-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Getting Artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: $GITHUB_WORKSPACE
+
+      - name: Release
+        run: ls $GITHUB_WORKSPACE
