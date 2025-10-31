@@ -1,4 +1,4 @@
-Name: Cross Platform Deployment
+name: Cross Platform Deployment
 
 on:
   push:
