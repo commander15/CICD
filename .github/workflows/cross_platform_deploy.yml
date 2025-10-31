@@ -33,7 +33,7 @@ jobs:
       - name: Release Package
         uses: softprops/action-gh-release@v2
         with:
-          name: v${{env.VERSION}}
+          tag_name: v${{env.VERSION}}
           body_path: ${{github.WORKSPACE}}/notes/RELEASE-${{env.VERSION}}.txt
           make_latest: true
           files: |
