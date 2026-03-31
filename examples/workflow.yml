@@ -1,14 +1,16 @@
-name: @WORKFLOW_NAME@
+name: CI/CD Pipeline
 
 on:
-@TRIGGERS@
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # Allow manual trigger
 
 env:
   # Package settings
-  PACKAGE_NAME: @PACKAGE_NAME@
-  PACKAGE_VERSION: @PACKAGE_VERSION@
+  PACKAGE_NAME: 
+  PACKAGE_VERSION: 
   # Release
-  RELEASE_NOTE_FILE: @RELEASE_NOTE_FILE@
+  RELEASE_NOTE_FILE: examples
   # CMake settings
   CMAKE_GENERATOR: Ninja
   CMAKE_BUILD_TYPE: Release
@@ -17,9 +19,9 @@ env:
   # CPack settings
   CPACK_PACKAGE_DIR: ${{env.CMAKE_BUILD_DIR}}/release
   # Qt settings
-  QT_VERSION: @QT_VERSION@
-  QT_TOOLS: '@QT_TOOLS@'
-  QT_IFW_VERSION: @IFW_VERSION@
+  QT_VERSION: 6.9.0
+  QT_TOOLS: ''
+  QT_IFW_VERSION: 
 
 jobs:
   cross-build:

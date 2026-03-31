@@ -1,7 +1,12 @@
+@PACKAGE_INIT@
+
+cmake_minimum_required(VERSION 3.25)
+
 # Root dir
-get_filename_component(CICD_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../.. DIRECTORY)
+set_and_check(CICD_ROOT_DIR ${PACKAGE_PREFIX_DIR})
 
 # Templates dir
-set(CICD_TEMPLATES_DIR ${CICD_ROOT_DIR}/share/CICD/templates)
+set(CICD_TEMPLATES_DIR ${PACKAGE_PREFIX_DIR}/@PACKAGE_TEMPLATES_DIR@)
 
+# Files
 include(${CMAKE_CURRENT_LIST_DIR}/CICDMacros.cmake)

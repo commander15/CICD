@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 
 project(CICD
     DESCRIPTION "CI/CD pipeline building helper CMake library."
-    VERSION 1.0.0
+    VERSION 1.1.0
 )
 
 # Project options
@@ -27,5 +27,11 @@ set(CPACK_PACKAGE_NAME      CICD)
 set(CPACK_PACKAGE_VERSION   ${PROJECT_VERSION})
 set(CPACK_PACKAGE_FILE_NAME CICD-${PROJECT_VERSION})
 set(CPACK_PACKAGE_DIRECTORY ${CMAKE_BINARY_DIR}/release)
-set(CPACK_GENERATOR         ZIP TGZ)
+
+set(CPACK_GENERATOR ZIP)
+if (LINUX)
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Commander Systems")
+    list(APPEND CPACK_GENERATOR TGZ DEB)
+endif()
+
 include(CPack)
